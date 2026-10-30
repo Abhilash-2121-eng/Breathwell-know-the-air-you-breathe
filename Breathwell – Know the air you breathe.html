@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Breathwell – Know the air you breathe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f0e8;--card:#fbf9f4;--ink:#1f2a24;--mute:#66706a;--line:#ddd6c8;--accent:#2f5d46;
+--serif:'Cormorant Garamond',Georgia,serif;--sans:'Jost',system-ui,-apple-system,sans-serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a17;--card:#1b231f;--ink:#ece8dd;--mute:#9aa49d;--line:#2d3731;--accent:#8fc7a5}}
+:root[data-theme="dark"]{--bg:#141a17;--card:#1b231f;--ink:#ece8dd;--mute:#9aa49d;--line:#2d3731;--accent:#8fc7a5}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6}
+h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.15}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;justify-content:space-between;align-items:center;height:58px}
+.logo{font-family:var(--serif);font-size:22px;display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+nav a{color:var(--mute);text-decoration:none;font-size:14px;margin-left:22px}
+nav a:hover{color:var(--accent)}
+.hero{padding:54px 0 26px}
+.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.hero h1{font-size:clamp(34px,6vw,58px);max-width:15ch;margin:12px 0 14px}
+.hero p{color:var(--mute);max-width:52ch}
+.picker{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.picker button{font:inherit;font-size:14px;padding:7px 16px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.picker button[aria-pressed=true]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:18px;margin-top:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px}
+.card h3{font-size:19px;margin-bottom:4px}
+.sub{color:var(--mute);font-size:13px}
+.gauge{text-align:center}
+.gauge svg{width:100%;max-width:290px}
+.aqi-num{font-family:var(--serif);font-size:62px;line-height:1}
+.cat{display:inline-block;margin-top:8px;padding:3px 14px;border-radius:99px;font-size:13px;font-weight:600;color:#fff}
+.dom{margin-top:14px;font-size:14px;color:var(--mute)}
+.poll{display:grid;gap:14px;margin-top:16px}
+.row{display:grid;grid-template-columns:62px 1fr 92px;align-items:center;gap:12px;font-size:14px}
+.row b{font-family:var(--serif);font-weight:600;font-size:16px}
+.bar{height:8px;border-radius:9px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:9px;transition:width .7s}
+.row span{text-align:right;color:var(--mute);font-size:13px}
+#chart{width:100%;height:auto;margin-top:10px;touch-action:none}
+#tip{font-size:13px;color:var(--mute);min-height:20px;margin-top:4px}
+section{padding:54px 0 6px}
+section>.wrap>h2{font-size:clamp(28px,4vw,38px);margin:8px 0 8px}
+.lead{color:var(--mute);max-width:56ch;margin-bottom:22px}
+.rec{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.rec .card{padding:20px;border-top-width:3px}
+.rec h3{font-size:17px;margin-bottom:6px}
+.rec p{font-size:14px;color:var(--mute)}
+.banner{border-radius:18px;padding:22px 24px;margin-bottom:14px;color:#fff;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px;align-items:center}
+.banner h3{font-size:24px}
+.scale{display:flex;border-radius:12px;overflow:hidden;margin-top:26px}
+.scale div{flex:1;padding:10px 6px;font-size:12px;color:#fff;text-align:center}
+.chem{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.eq{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:var(--bg);border-radius:10px;padding:10px 12px;margin:10px 0;line-height:1.8}
+.chem p{font-size:14px;color:var(--mute)}
+footer{margin-top:60px;border-top:1px solid var(--line);padding:26px 0;font-size:13px;color:var(--mute)}
+.row{cursor:pointer;grid-template-columns:62px 1fr 108px;border-radius:10px;padding:4px 0;transition:background .2s}.row:hover,.row:focus-visible{background:var(--bg);outline:none}
+.row span{white-space:nowrap}.row em{font-style:normal}.row .p{display:none}.row.on .v{display:none}.row.on .p{display:inline;font-weight:600;color:var(--ink)}
+@property --tint{syntax:'<color>';inherits:true;initial-value:#3f8f5a}
+:root{transition:--tint .9s}
+:root[data-pal=paper]{--bg:#f4f0e8;--card:#fbf9f4;--ink:#1f2a24;--mute:#66706a;--line:#ddd6c8;--accent:#2f5d46}
+:root[data-pal=night]{--bg:#0f1512;--card:#18211c;--ink:#ece8dd;--mute:#9aa49d;--line:#2a352f;--accent:#8fc7a5}
+:root[data-pal=ocean]{--bg:#e3eef3;--card:#f3f8fa;--ink:#14303d;--mute:#587482;--line:#c5d8e0;--accent:#1d6b8a}
+:root[data-pal=ember]{--bg:#221612;--card:#2d1e19;--ink:#f3e6da;--mute:#b79d8c;--line:#473229;--accent:#e8985a}
+.wrap{max-width:1180px}
+main{position:relative;z-index:0}
+.sky{position:absolute;inset:0 0 auto;height:700px;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 70% 80% at 15% 0,color-mix(in srgb,var(--tint) 34%,transparent),transparent),radial-gradient(ellipse 50% 60% at 95% 5%,color-mix(in srgb,var(--tint) 20%,transparent),transparent)}
+.hero{padding:84px 22px 34px}
+.hero h1{font-size:clamp(42px,7.5vw,84px);max-width:13ch;letter-spacing:-.01em}
+.hero p{font-size:18px;max-width:54ch}
+.picker button{padding:9px 22px;font-size:15px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:46px;border-top:1px solid var(--line)}
+.stats div{padding:20px 18px 0 0}.stats b{font-family:var(--serif);font-size:38px;font-weight:400;display:block;line-height:1.1}.stats span{font-size:13px;color:var(--mute)}
+.gw{position:relative}.gauge svg{max-width:380px}
+#aqi{position:absolute;left:0;right:0;bottom:12%;font-size:clamp(60px,9vw,92px)}
+.card{padding:30px}.card h3{font-size:22px}
+.cat{font-size:15px;padding:5px 18px}
+section{padding:84px 0 6px}
+.sw{display:flex;gap:9px}.sw button{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);cursor:pointer;padding:0}.sw button[aria-pressed=true]{outline:2px solid var(--accent);outline-offset:2px}
+.fc{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;height:210px;margin-top:16px}
+.fc div{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;font-size:12px;color:var(--mute);gap:5px}
+.fc i{width:100%;max-width:56px;border-radius:10px 10px 4px 4px;display:block}.fc b{color:var(--ink);font-size:14px}
+.cmp button{all:unset;box-sizing:border-box;display:grid;grid-template-columns:170px 1fr 130px;gap:14px;align-items:center;width:100%;padding:15px 8px;border-bottom:1px solid var(--line);cursor:pointer;font-size:15px}
+.cmp button:hover{background:var(--bg)}.cmp button[aria-current=true]{font-weight:600}
+.cmp i{display:block;height:10px;border-radius:9px}
+.cmp{max-height:640px;overflow-y:auto}.cmp small{display:block;font-size:11px;color:var(--mute);font-weight:400;line-height:1.3}
+.picker select{font:inherit;font-size:15px;padding:9px 16px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);max-width:100%}
+.pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:14px}
+.pg h3 span{font-family:var(--sans);font-size:12px;color:var(--mute);margin-left:8px}
+.pg dt{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-top:14px;font-weight:600}.pg dd{margin:2px 0 0;font-size:14px;color:var(--mute)}
+details{border-bottom:1px solid var(--line);padding:18px 0}summary{cursor:pointer;font-family:var(--serif);font-size:20px}details p{margin-top:8px;color:var(--mute);max-width:70ch}
+h1,h2,h3,.aqi-num,.stats b,.fc b{font-variant-numeric:lining-nums}
+body{letter-spacing:.005em}h1,h2,h3{font-weight:500;line-height:1.05}
+.logo{font-size:28px;letter-spacing:.02em}.card h3{font-size:28px}.row b{font-size:20px}.stats b{font-size:50px}summary{font-size:25px}
+section>.wrap>h2{font-size:clamp(36px,5vw,56px)}.eyebrow{letter-spacing:.26em;font-size:11px}
+.hero h1{font-size:clamp(50px,8.6vw,108px);line-height:.98;letter-spacing:-.015em}
+.hero h1 em{font-style:italic;background:linear-gradient(100deg,var(--accent),var(--tint),var(--accent));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite}
+@keyframes shine{to{background-position:200% 0}}
+.hero>*{animation:up 1s cubic-bezier(.2,.7,.2,1) both}.hero>:nth-child(2){animation-delay:.1s}.hero>:nth-child(3){animation-delay:.2s}.hero>:nth-child(4){animation-delay:.3s}.hero>:nth-child(5){animation-delay:.4s}
+@keyframes up{from{opacity:0;transform:translateY(30px)}}
+.sky{-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}#cv{width:100%;height:100%;display:block}
+.card{background:color-mix(in srgb,var(--card) 72%,transparent);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);transition:transform .35s,box-shadow .35s}
+.gauge{position:relative;overflow:hidden}
+.gw::before,.gw::after{content:"";position:absolute;left:50%;top:86%;width:58%;aspect-ratio:1;border-radius:50%;border:1.5px solid var(--tint);opacity:0;pointer-events:none;animation:ring var(--pace,3.6s) ease-out infinite}
+.gw::after{animation-delay:calc(var(--pace,3.6s)/-2)}
+@keyframes ring{0%{transform:translate(-50%,-50%) scale(.45);opacity:.6}100%{transform:translate(-50%,-50%) scale(1.5);opacity:0}}
+#arc{filter:drop-shadow(0 0 7px var(--tint))}#aqi{font-size:clamp(70px,10vw,114px);font-weight:500}
+.tick{overflow:hidden;margin:36px 0 8px;border-block:1px solid var(--line);padding:14px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.trk{display:flex;width:max-content;animation:mq 100s linear infinite}.tick:hover .trk{animation-play-state:paused}
+.trk button{all:unset;cursor:pointer;display:flex;align-items:center;gap:9px;padding:0 26px;font-size:15px;white-space:nowrap}.trk button:hover{color:var(--accent)}
+.trk b{font-family:var(--serif);font-size:22px;font-weight:600}.trk i{width:9px;height:9px;border-radius:50%}
+@keyframes mq{to{transform:translateX(-50%)}}
+.bar i{transform-origin:left;animation:gx 1.2s cubic-bezier(.2,.7,.2,1) both}@keyframes gx{from{transform:scaleX(0)}}
+.poll .row:nth-child(2) i{animation-delay:.08s}.poll .row:nth-child(3) i{animation-delay:.16s}.poll .row:nth-child(4) i{animation-delay:.24s}.poll .row:nth-child(5) i{animation-delay:.32s}.poll .row:nth-child(6) i{animation-delay:.4s}
+.ln{stroke-dasharray:1;stroke-dashoffset:1;animation:dr 1.8s cubic-bezier(.3,.6,.2,1) forwards}@keyframes dr{to{stroke-dashoffset:0}}
+.ar{animation:fi 1.8s both}@keyframes fi{from{opacity:0}}
+.rv{opacity:0;transform:translateY(28px);transition:opacity .9s,transform .9s cubic-bezier(.2,.7,.2,1)}.rv.in{opacity:1;transform:none}
+.rec .card:hover,.pg .card:hover,.chem .card:hover{transform:translateY(-6px);box-shadow:0 22px 44px -26px rgba(0,0,0,.45)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+@media(max-width:760px){.grid{grid-template-columns:1fr}nav a{display:none}.row{grid-template-columns:54px 1fr 98px}.cmp button{grid-template-columns:104px 1fr 96px;gap:8px;font-size:13px}.card{padding:22px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<a class="logo" href="#top"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="13" cy="13" r="10.5" style="color:var(--accent)"/><path d="M6 14c3-4 5 4 8 0s4-3 6-1" style="color:var(--accent)"/></svg>Breathwell</a>
+<nav><a href="#dash">Dashboard</a><a href="#cities">Cities</a><a href="#health">Health</a><a href="#pollutants">Pollutants</a><a href="#chem">Chemistry</a><a href="#act">Act</a></nav><div class="sw" id="sw" role="group" aria-label="Colour theme"></div>
+</div></header>
+
+<main id="top"><div class="sky" aria-hidden="true"><canvas id="cv"></canvas></div>
+<div class="wrap hero">
+<div class="eyebrow">Atmosphere, made readable</div>
+<h1>The air around you, in <em>plain numbers.</em></h1>
+<p>Choose a city to see its air quality index, the pollutants behind it, how the day has unfolded, and what it means for your health.</p>
+<div class="picker" id="picker" role="group" aria-label="City"></div>
+<div class="stats"><div><b>≈7 million</b><span>premature deaths a year linked to air pollution (WHO)</span></div><div><b>99%</b><span>of people breathe air above WHO guideline limits</span></div><div><b>~30×</b><span>thinner than a human hair: a PM2.5 particle</span></div><div><b>0–500</b><span>the CPCB scale, from clean air to severe</span></div></div>
+</div>
+
+<div class="tick" aria-label="Air quality in every capital"><div class="trk" id="trk"></div></div>
+<div class="wrap" id="dash">
+<div class="grid">
+<div class="card gauge">
+<div class="gw"><svg viewBox="0 0 220 128" aria-hidden="true"><path d="M20 110A90 90 0 0 1 200 110" fill="none" stroke="var(--line)" stroke-width="14" stroke-linecap="round"/><path id="arc" d="M20 110A90 90 0 0 1 200 110" fill="none" stroke="#999" stroke-width="14" stroke-linecap="round" stroke-dasharray="282.7" stroke-dashoffset="282.7" style="transition:stroke-dashoffset .9s,stroke .5s"/></svg>
+<div class="aqi-num" id="aqi">–</div></div>
+<div class="sub" style="margin-top:6px">Air Quality Index</div>
+<div class="cat" id="cat"></div>
+<div class="dom" id="dom"></div>
+<div class="sub" id="upd" style="margin-top:6px"></div>
+</div>
+<div class="card">
+<h3>What’s in the air</h3>
+<div class="sub">Concentration against the 24-hour national guideline · click a pollutant to see its percentage of the limit</div>
+<div class="poll" id="poll"></div>
+</div>
+</div>
+<div class="card" style="margin-top:18px">
+<h3>The last 24 hours</h3>
+<div class="sub">Touch or hover along the line to read each hour</div>
+<svg id="chart" viewBox="0 0 640 220"></svg>
+<div id="tip"></div>
+</div>
+</div>
+
+<div class="wrap" style="margin-top:18px"><div class="card"><h3>7-day outlook</h3><div class="sub">Sample forecast for the selected city · bar height shows expected AQI</div><div class="fc" id="fc"></div></div></div>
+<section id="cities"><div class="wrap"><div class="eyebrow">Compare</div><h2>City by city</h2><p class="lead">Every state and Union Territory capital in India, ranked from most to least polluted. Tap one to load it into the dashboard.</p><div class="card cmp" id="cmp" style="padding:12px 22px"></div></div></section>
+<section id="health"><div class="wrap">
+<div class="eyebrow">Health guide</div>
+<h2>What to do today</h2>
+<p class="lead">Guidance updates with the selected city’s air quality. Different people feel the same air differently.</p>
+<div class="banner" id="banner"></div>
+<div class="rec" id="rec"></div>
+<div class="scale" id="scale"></div>
+</div></section>
+
+<section id="pollutants"><div class="wrap"><div class="eyebrow">Know your pollutants</div><h2>Six things we measure</h2><p class="lead">Each one comes from different sources and harms the body in a different way.</p><div class="pg" id="pg"></div></div></section>
+<section id="chem"><div class="wrap">
+<div class="eyebrow">Behind the numbers</div>
+<h2>How polluted air is made</h2>
+<p class="lead">Most of what the index measures starts as simple reactions in the atmosphere.</p>
+<div class="chem">
+<div class="card"><h3>Ground-level ozone</h3><div class="eq">NO₂ + sunlight → NO + O<br>O + O₂ → O₃</div><p>Ozone isn’t emitted directly. Sunlight splits nitrogen dioxide from vehicles, and the freed oxygen atom joins an O₂ molecule. That’s why ozone peaks on hot afternoons.</p></div>
+<div class="card"><h3>Fine particles</h3><div class="eq">SO₂ + OH· → HSO₃·<br>→ H₂SO₄ (sulphate aerosol)</div><p>PM2.5 is smaller than 2.5 µm, small enough to reach the bloodstream. Part of it forms in the air when gases like SO₂ and NOₓ condense into tiny particles.</p></div>
+<div class="card"><h3>Acid rain</h3><div class="eq">SO₂ + ½O₂ + H₂O → H₂SO₄<br>2NO₂ + H₂O → HNO₃ + HNO₂</div><p>Sulphur and nitrogen oxides dissolve in cloud water and lower its pH, harming soil, water bodies and old buildings.</p></div>
+</div>
+</div></section>
+<section id="act"><div class="wrap"><div class="eyebrow">Take action</div><h2>Small habits, cleaner air</h2><p class="lead">Protecting yourself and cutting emissions both matter.</p>
+<div class="rec">
+<div class="card" style="border-top-color:var(--accent)"><h3>Check before you go</h3><p>Look at the AQI before outdoor plans. Ventilate your home when the index is lowest, and use a chimney or exhaust fan while cooking.</p></div>
+<div class="card" style="border-top-color:var(--accent)"><h3>Mask up properly</h3><p>A well-fitted N95 or FFP2 mask filters fine particles. Cloth and surgical masks let most PM2.5 through.</p></div>
+<div class="card" style="border-top-color:var(--accent)"><h3>Clean the air indoors</h3><p>A HEPA purifier sized for the room helps on bad days. Avoid incense, mosquito coils and indoor smoking.</p></div>
+<div class="card" style="border-top-color:var(--accent)"><h3>Move differently</h3><p>Walk, cycle, carpool or take public transport. Fewer engines on the road means less NO₂ and PM2.5.</p></div>
+<div class="card" style="border-top-color:var(--accent)"><h3>Never burn waste</h3><p>Burning leaves, plastic or crop residue releases particles and toxic gases. Compost or hand it to collection services.</p></div>
+<div class="card" style="border-top-color:var(--accent)"><h3>Grow green cover</h3><p>Trees trap dust and shade streets, lowering the heat that drives ozone formation.</p></div>
+</div></div></section>
+<section id="faq"><div class="wrap"><div class="eyebrow">Questions</div><h2>Good to know</h2>
+<details><summary>What does the AQI actually measure?</summary><p>It converts the concentrations of up to eight pollutants into a single number from 0 to 500. The pollutant with the worst sub-index decides the final value.</p></details>
+<details><summary>Why is air often worse in winter?</summary><p>Cold, still air near the ground traps pollutants under a warmer layer, which is called a temperature inversion. People also burn more fuel for heat.</p></details>
+<details><summary>Do cloth masks protect against smog?</summary><p>They stop large droplets but let most fine particles through. A snug N95 is designed to filter at least 95% of them.</p></details>
+<details><summary>Is indoor air always cleaner?</summary><p>Usually for dust and soot, but cooking smoke, incense and cleaning sprays can make indoor air worse than the street outside.</p></details>
+</div></section>
+</main>
+
+<footer><div class="wrap">Breathwell is a class project for Chemistry. Readings shown are sample values for demonstration, not live measurements. AQI categories follow the Indian CPCB scale. For real-time data, consult the CPCB or SAFAR portals.</div></footer>
+
+<script>
+const CATS=[
+{max:50,n:"Good",c:"#3f8f5a",mask:"No mask needed",
+ t:["Air is clean. Enjoy the day outdoors.","Free to play and walk outside as usual.","No special precautions.","A fine day for any activity."]},
+{max:100,n:"Satisfactory",c:"#86a83c",mask:"No mask needed",
+ t:["Air is acceptable for most people.","Normal outdoor activity is fine.","Very sensitive people may notice mild irritation.","Normal exercise is fine."]},
+{max:200,n:"Moderate",c:"#d4a017",mask:"Mask optional near traffic",
+ t:["Limit long stretches near busy roads.","Shorten outdoor play and keep breaks indoors.","Carry your inhaler or medication.","Prefer parks or mornings; ease the intensity."]},
+{max:300,n:"Poor",c:"#d9822b",mask:"Wear an N95 outdoors",
+ t:["Cut down on prolonged outdoor exertion.","Keep outdoor time short; avoid peak traffic hours.","Stay mostly indoors; follow your doctor’s plan.","Move workouts indoors."]},
+{max:400,n:"Very Poor",c:"#c4493a",mask:"N95 outdoors, air purifier indoors",
+ t:["Avoid outdoor activity where you can.","Keep children indoors; skip outdoor sport.","Stay indoors and keep windows closed; contact a doctor if symptoms rise.","Avoid outdoor exercise and labour."]},
+{max:500,n:"Severe",c:"#8a2a3b",mask:"N95 whenever outside, purifier indoors",
+ t:["Health emergency conditions. Stay indoors.","Keep children and elders strictly indoors.","Seek medical advice at the first symptom.","No outdoor exercise or work."]}];
+const WHO=["Everyone","Children & elders","Asthma & heart conditions","Exercise & outdoor work"];
+const P=[["PM2.5","µg/m³",60,"pm25"],["PM10","µg/m³",100,"pm10"],["NO₂","µg/m³",80,"no2"],["SO₂","µg/m³",80,"so2"],["O₃","µg/m³",100,"o3"],["CO","mg/m³",2,"co"]];
+const CITIES={
+"Delhi":{aqi:312,pm25:168,pm10:290,o3:42,no2:78,so2:14,co:2.8},
+"Mumbai":{aqi:128,pm25:52,pm10:96,o3:48,no2:40,so2:12,co:1.1},
+"Chennai":{aqi:84,pm25:32,pm10:68,o3:36,no2:24,so2:9,co:.8},
+"Bengaluru":{aqi:62,pm25:22,pm10:51,o3:30,no2:19,so2:7,co:.6},
+"Shimla":{aqi:38,pm25:12,pm10:28,o3:40,no2:8,so2:3,co:.3}};
+const ST={Delhi:"National capital",Mumbai:"Maharashtra",Chennai:"Tamil Nadu",Bengaluru:"Karnataka",Shimla:"Himachal Pradesh"};
+[["Amaravati","Andhra Pradesh",74],["Itanagar","Arunachal Pradesh",36],["Dispur","Assam",118],["Patna","Bihar",214],["Raipur","Chhattisgarh",156],["Panaji","Goa",48],["Gandhinagar","Gujarat",102],["Chandigarh","Punjab, Haryana & UT",168],["Ranchi","Jharkhand",132],["Thiruvananthapuram","Kerala",52],["Bhopal","Madhya Pradesh",112],["Imphal","Manipur",58],["Shillong","Meghalaya",34],["Aizawl","Mizoram",28],["Kohima","Nagaland",40],["Bhubaneswar","Odisha",96],["Jaipur","Rajasthan",188],["Gangtok","Sikkim",31],["Hyderabad","Telangana",92],["Agartala","Tripura",82],["Lucknow","Uttar Pradesh",276],["Dehradun","Uttarakhand",124],["Kolkata","West Bengal",168],["Srinagar","J&K (summer capital)",78],["Jammu","J&K (winter capital)",134],["Leh","Ladakh",29],["Port Blair","Andaman & Nicobar",33],["Kavaratti","Lakshadweep",26],["Daman","D&NH and Daman & Diu",70],["Puducherry","Puducherry",58]].forEach(([n,s,a],i)=>{ST[n]=s;CITIES[n]={aqi:a,pm25:Math.round(a*.54),pm10:Math.round(a*.93),o3:30+Math.round(9*(1+Math.sin(i*2.1))),no2:Math.round(a*.27),so2:Math.round(4+a*.03),co:Math.max(.3,Math.round(a*.009*10)/10)}});
+const FEAT=["Delhi","Mumbai","Chennai","Bengaluru","Shimla"];
+const $=id=>document.getElementById(id);
+const cat=a=>CATS.find(c=>a<=c.max)||CATS[5];
+let city="Mumbai";
+
+function series(base){
+ const out=[],now=new Date().getHours();
+ for(let i=23;i>=0;i--){const h=(now-i+24)%24;
+  const f=.8+.22*Math.exp(-((h-9)**2)/8)+.3*Math.exp(-((h-21)**2)/10)+.04*Math.sin(h*2.3);
+  out.push({h,v:f});}
+ const k=base/out[23].v;
+ return out.map(o=>({h:o.h,v:Math.round(o.v*k)}));
+}
+const hr=h=>(h%12||12)+(h<12?" am":" pm");
+
+function render(){
+ const d=CITIES[city],c=cat(d.aqi);
+ $("picker").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.textContent===city));$("more").value=FEAT.includes(city)?"":city;
+ count($("aqi"),d.aqi);document.documentElement.style.setProperty("--pace",(4.6-3*Math.min(d.aqi,500)/500).toFixed(2)+"s");
+ const arc=$("arc");arc.style.stroke=c.c;arc.style.strokeDashoffset=282.7*(1-Math.min(d.aqi,500)/500);
+ const ct=$("cat");ct.textContent=c.n;ct.style.background=c.c;
+ const ratios=P.map(p=>[p[0],d[p[3]]/p[2]]).sort((a,b)=>b[1]-a[1]);
+ $("dom").innerHTML="Main pollutant: <b style='color:var(--ink)'>"+ratios[0][0]+"</b>";
+ $("upd").textContent="Sample reading · "+city+", "+ST[city]+" · "+new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+ $("poll").innerHTML=P.map(p=>{const v=d[p[3]],r=v/p[2],col=r>1?"#c4493a":r>.6?"#d4a017":"#3f8f5a";
+  return `<div class="row" tabindex="0" role="button" title="Click to show percentage of limit"><b>${p[0]}</b><div class="bar"><i style="width:${Math.min(r,1)*100}%;background:${col}"></i></div><span><em class="v">${v} ${p[1]}</em><em class="p">${Math.round(r*100)}% of limit</em></span></div>`}).join("");
+ $("banner").style.background=c.c;document.documentElement.style.setProperty("--tint",c.c);fc(d.aqi);cmp();setAir(d.aqi,c.c);
+ $("banner").innerHTML=`<div><div class="eyebrow" style="color:#fff;opacity:.85">${city} · AQI ${d.aqi}</div><h3>${c.n} air</h3></div><div style="font-size:14px">${c.mask}</div>`;
+ $("rec").innerHTML=WHO.map((w,i)=>`<div class="card" style="border-top-color:${c.c}"><h3>${w}</h3><p>${c.t[i]}</p></div>`).join("");
+ draw(series(d.aqi),c);
+}
+
+function draw(s,c){
+ const W=640,H=220,L=36,B=26,T=12,max=Math.max(...s.map(x=>x.v))*1.15;
+ const X=i=>L+i*(W-L-8)/23,Y=v=>T+(H-T-B)*(1-v/max);
+ const line=s.map((p,i)=>(i?"L":"M")+X(i).toFixed(1)+" "+Y(p.v).toFixed(1)).join("");
+ let g="";for(let k=0;k<=3;k++){const v=Math.round(max*k/3/10)*10,y=Y(v);
+  g+=`<line x1="${L}" x2="${W-8}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L-6}" y="${y+4}" text-anchor="end" font-size="11" fill="var(--mute)">${v}</text>`;}
+ [0,6,12,18,23].forEach(i=>g+=`<text x="${X(i)}" y="${H-6}" text-anchor="middle" font-size="11" fill="var(--mute)">${i==23?"now":hr(s[i].h)}</text>`);
+ $("chart").innerHTML=g+`<path d="${line}L${X(23)} ${Y(0)}L${X(0)} ${Y(0)}Z" class="ar" fill="${c.c}" opacity=".14"/><path d="${line}" pathLength="1" class="ln" fill="none" stroke="${c.c}" stroke-width="2.5" stroke-linejoin="round"/><circle id="dot" r="5" fill="${c.c}" stroke="var(--card)" stroke-width="2" cx="${X(23)}" cy="${Y(s[23].v)}"/>`;
+ const show=i=>{$("dot").setAttribute("cx",X(i));$("dot").setAttribute("cy",Y(s[i].v));
+  $("tip").textContent=hr(s[i].h)+" · AQI "+s[i].v+" · "+cat(s[i].v).n;};
+ show(23);
+ $("chart").onpointermove=e=>{const r=$("chart").getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W;
+  show(Math.max(0,Math.min(23,Math.round((x-L)/((W-L-8)/23)))));};
+}
+
+$("picker").innerHTML=FEAT.map(n=>`<button type="button" aria-pressed="false">${n}</button>`).join("")+`<select id="more" aria-label="All state and UT capitals"><option value="">All ${Object.keys(CITIES).length} capitals…</option>${Object.keys(CITIES).sort().map(n=>`<option value="${n}">${n} – ${ST[n]}</option>`).join("")}</select>`;
+$("more").onchange=e=>{if(e.target.value){city=e.target.value;render();}};
+$("picker").onclick=e=>{if(e.target.tagName=="BUTTON"){city=e.target.textContent;render();}};
+$("scale").innerHTML=CATS.map((c,i)=>`<div style="background:${c.c}">${c.n}<br>${i?CATS[i-1].max+1:0}–${c.max}</div>`).join("");
+const tg=e=>{const r=e.target.closest(".row");if(r)r.classList.toggle("on")};
+$("poll").onclick=tg;$("poll").onkeydown=e=>{if(e.key=="Enter"||e.key==" "){e.preventDefault();tg(e)}};
+const PAL=[["paper","#f4f0e8"],["night","#141a17"],["ocean","#bfe0ee"],["ember","#e8985a"]];
+$("sw").innerHTML=PAL.map(p=>`<button type="button" title="${p[0]} theme" aria-label="${p[0]} theme" aria-pressed="false" data-p="${p[0]}" style="background:${p[1]}"></button>`).join("");
+$("sw").onclick=e=>{const p=e.target.dataset.p;if(!p)return;document.documentElement.dataset.pal=p;$("sw").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.p==p));};
+const G=[["PM2.5","under 2.5 µm","Vehicle exhaust, crop-residue burning, power plants, cooking fires.","Reaches deep into the lungs and bloodstream. Linked to asthma, heart disease and slower lung growth in children."],
+["PM10","under 10 µm","Road and construction dust, brick kilns, mining.","Irritates the eyes, nose and throat and worsens asthma and bronchitis."],
+["NO₂","gas","Diesel and petrol engines, power generation.","Inflames the airways, lowers resistance to infection, and feeds the formation of ozone and particles."],
+["SO₂","gas","Burning coal and high-sulphur fuel, smelters.","Triggers wheezing and chest tightness. It is the main cause of acid rain."],
+["O₃","gas, secondary","Made in the air when sunlight acts on NOₓ and volatile organic compounds.","Cuts lung function, causes coughing and chest pain, and damages crops."],
+["CO","gas","Incomplete burning in vehicles, stoves and burning waste.","Binds to haemoglobin and reduces oxygen delivery. Dangerous in closed spaces."]];
+$("pg").innerHTML=G.map(g=>`<div class="card"><h3>${g[0]}<span>${g[1]}</span></h3><dl><dt>Where it comes from</dt><dd>${g[2]}</dd><dt>What it does to you</dt><dd>${g[3]}</dd></dl></div>`).join("");
+function fc(base){let h="";const t=Date.now();for(let i=0;i<7;i++){const v=i?Math.round(base*(.78+.42*Math.abs(Math.sin(i*1.7+base/40)))):base;const c=cat(v);const lb=i?new Date(t+i*864e5).toLocaleDateString([],{weekday:"short"}):"Today";h+=`<div><b>${v}</b><i style="height:${Math.max(8,v/Math.max(base*1.3,60)*140)}px;background:${c.c}"></i>${lb}</div>`}$("fc").innerHTML=h;}
+function cmp(){$("cmp").innerHTML=Object.entries(CITIES).sort((a,b)=>b[1].aqi-a[1].aqi).map(([n,d])=>{const c=cat(d.aqi);return `<button type="button" data-c="${n}" ${n==city?'aria-current="true"':''}><span>${n}<small>${ST[n]}</small></span><i style="width:${d.aqi/5}%;background:${c.c}"></i><span>${d.aqi} · ${c.n}</span></button>`}).join("");}
+$("cmp").onclick=e=>{const b=e.target.closest("button");if(b){city=b.dataset.c;render();scrollTo({top:$("dash").getBoundingClientRect().top+scrollY-70,behavior:"smooth"});}};
+function count(el,to){const f=+el.dataset.v||0,t0=performance.now();el.dataset.v=to;(function s(t){const k=Math.min(1,(t-t0)/1100),e=1-Math.pow(1-k,3);el.textContent=Math.round(f+(to-f)*e);if(k<1)requestAnimationFrame(s)})(t0)}
+(()=>{const cv=$("cv"),x=cv.getContext("2d"),k=devicePixelRatio||1,rm=matchMedia("(prefers-reduced-motion:reduce)").matches;let W=0,H=0,ps=[],tgt=60,spd=.5,col="#3f8f5a";
+const fit=()=>{const r=cv.getBoundingClientRect();W=cv.width=r.width*k;H=cv.height=r.height*k};fit();addEventListener("resize",fit);
+window.setAir=(a,c)=>{tgt=Math.min(150,Math.round(30+a*.4));spd=.3+a/350;col=c};
+const mk=()=>({x:Math.random()*W,y:Math.random()*H,r:(Math.random()*2+.8)*k,vx:Math.random()*.9-.25,vy:Math.random()*.5-.25,a:Math.random()*.5+.2,p:Math.random()*6});
+const f=t=>{x.clearRect(0,0,W,H);while(ps.length<tgt)ps.push(mk());ps.length=Math.min(ps.length,tgt);x.fillStyle=x.strokeStyle=col;
+for(const p of ps){p.x+=p.vx*spd*k;p.y+=p.vy*spd*k;if(p.x>W+9)p.x=-9;if(p.x<-9)p.x=W+9;if(p.y>H+9)p.y=-9;if(p.y<-9)p.y=H+9}
+for(let i=0;i<ps.length;i++){const p=ps[i];x.globalAlpha=p.a*(.65+.35*Math.sin(t/900+p.p));x.beginPath();x.arc(p.x,p.y,p.r,0,6.283);x.fill();
+for(let j=i+1;j<ps.length;j++){const q=ps[j],dx=p.x-q.x,dy=p.y-q.y,d=dx*dx+dy*dy,L=95*k;if(d<L*L){x.globalAlpha=.16*(1-Math.sqrt(d)/L);x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}}}
+if(!rm)requestAnimationFrame(f)};requestAnimationFrame(f)})();
+const tk=Object.keys(CITIES).sort((a,b)=>CITIES[b].aqi-CITIES[a].aqi).map(n=>{const c=cat(CITIES[n].aqi);return `<button type="button" data-c="${n}"><i style="background:${c.c}"></i>${n} <b>${CITIES[n].aqi}</b><span style="color:var(--mute);font-size:13px">${c.n}</span></button>`}).join("");
+$("trk").innerHTML=tk+tk;
+$("trk").onclick=e=>{const b=e.target.closest("button");if(b){city=b.dataset.c;render();scrollTo({top:$("dash").getBoundingClientRect().top+scrollY-70,behavior:"smooth"})}};
+if(!matchMedia("(prefers-reduced-motion:reduce)").matches&&"IntersectionObserver" in window){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll("main .card,section .eyebrow,section h2,section .lead,details").forEach(el=>{el.classList.add("rv");io.observe(el)})}
+render();
+</script>
+</body>
+</html>
